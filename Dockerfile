@@ -17,14 +17,21 @@ RUN apt-get update && \
 	apt-get update -y && \
 	apt-get upgrade -y && \
 	apt-get install -y software-properties-common  && \
-	BUILD_PACKAGES="pwgen sudo cron wget" && \
+	BUILD_PACKAGES="pwgen sudo cron wget ca-certificates" && \
 	apt-get -y install $BUILD_PACKAGES
 
-RUN echo 'Installing Postgres 9.1' && \
-	wget -O /etc/apt/sources.list.d/pgdg.list http://apt.postgresql.org/pub/repos/apt/pool/main/pgdg.list && \
-	apt-key add --keyserver keyserver.ubuntu.com --key 4041C04B && \
-	apt-get update && \
-	apt install postgresql-9.1
+RUN echo 'Add Postgres 9.1 repos' && \
+	wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && \
+	sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
+	#wget -O /etc/apt/sources.list.d/pgdg.list http://apt.postgresql.org/pub/repos/apt/pool/main/pgdg.list
+
+RUN echo ' Installing Postgres 9.1' && \	
+	#apt-key add --keyserver keyserver.ubuntu.com --key 4041C04B && \
+	apt-get update -y
+	#&& \
+	#apt install postgresql-9.1
+
+RUN apt install -y postgresql-9.1
 
 RUN echo 'Setting up Postgres 9.1' && \
 	systemctl start postgresql-9.1 && \
