@@ -1,0 +1,12 @@
+services:
+  web:
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile
+    image: postgres:9.1.18
+    environment:
+      - DB_HOST=${DB_HOST:-mysql_container_id}
+    restart: always
+    volumes:
+      # 1. mount your data path
+      - /var/www/short.itemizer360.com:/var/www
